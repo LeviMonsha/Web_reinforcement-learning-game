@@ -1,17 +1,26 @@
 <template>
   <div id="app">
-    <h1>Q-learning Game</h1>
-    <Game />
-    <router-view />
+    <HomePage v-if="!gameStarted" @start="startGame" />
+    <GameField v-else :mode="gameMode" />
   </div>
 </template>
 
-<script>
-export default {
-  name: 'App',
+<script setup>
+import { ref } from "vue";
+import HomePage from "./pages/HomePage.vue";
+import GameField from "./components/GameFieldComponent.vue";
+
+const gameStarted = ref(false);
+const gameMode = ref("");
+
+const startGame = (mode) => {
+  gameMode.value = mode;
+  gameStarted.value = true;
 };
 </script>
 
-<style scoped>
-
+<style>
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+}
 </style>
