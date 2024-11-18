@@ -10,13 +10,11 @@ import { watch } from "vue";
 // eslint-disable-next-line no-undef
 const props = defineProps(["mode"]);
 
-// Наблюдение за изменением режима
 watch(
   () => props.mode,
   (newMode) => {
     if (newMode === "q-learning") {
       console.log("Режим Q-learning активирован");
-      // Здесь можно добавить логику для Q-learning
     }
   }
 );

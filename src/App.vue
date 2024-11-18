@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <HomePage v-if="!gameStarted" @start="startGame" />
-    <GameField v-else :mode="gameMode" />
+    <GameField v-else :mode="gameMode" @start="handleReturnToMenu" />
   </div>
 </template>
 
@@ -16,6 +16,10 @@ const gameMode = ref("");
 const startGame = (mode) => {
   gameMode.value = mode;
   gameStarted.value = true;
+};
+
+const handleReturnToMenu = () => {
+  gameStarted.value = false;
 };
 </script>
 
