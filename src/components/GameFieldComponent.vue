@@ -8,14 +8,13 @@
       class="tv-container relative w-full h-full max-w-4xl max-h-3xl bg-gray-800 rounded-lg shadow-lg overflow-hidden"
     >
       <div class="tv-screen bg-black rounded-lg border-4 border-gray-600">
+        <TrackCanvas :width="screenWidth" :height="screenHeight" />
         <div class="game-field">
-          <div class="track">
-            <div
-              class="absolute bg-blue-500"
-              :class="`w-${WIDTH_CAR} h-${HEIGHT_CAR}`"
-              :style="{ left: position.x + 'px', top: position.y + 'px' }"
-            />
-          </div>
+          <div
+            class="car absolute bg-blue-500"
+            :class="`w-${WIDTH_CAR} h-${HEIGHT_CAR}`"
+            :style="{ left: position.x + 'px', top: position.y + 'px' }"
+          />
         </div>
       </div>
 
@@ -36,6 +35,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { WIDTH_CAR, HEIGHT_CAR, SPEED } from "../constants.js";
+import TrackCanvas from "./TrackCanvasComponent.vue";
 
 // eslint-disable-next-line no-undef
 const props = defineProps(["mode"]);
