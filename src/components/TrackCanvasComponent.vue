@@ -1,21 +1,26 @@
 <template>
-  <div>
-    <button class="text-white" @click="clearCanvas">Очистить поле</button>
-    <canvas
-      ref="canvas"
-      @mousedown="startDrawing"
-      @mouseup="stopDrawing"
-      @mousemove="draw"
-      width="800"
-      height="600"
-      style="border: 1px solid #000"
-    ></canvas>
-  </div>
+  <button class="text-white" @click="clearCanvas">
+    <BeakerIcon class="size-6 text-blue-500" />
+  </button>
+  <canvas
+    ref="canvas"
+    @mousedown="startDrawing"
+    @mouseup="stopDrawing"
+    @mousemove="draw"
+    :width="800"
+    :height="600"
+    style="border: 1px solid #000"
+  ></canvas>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
+import { BeakerIcon } from "@heroicons/vue/24/solid";
 
+// eslint-disable-next-line no-undef, no-unused-vars
+const props = defineProps(["width", "height"]);
+// eslint-disable-next-line no-undef, no-unused-vars
+const emit = defineEmits(["lineDrawn"]);
 const canvas = ref(null);
 const isDrawing = ref(false);
 const context = ref(null);
@@ -40,11 +45,12 @@ function draw(event) {
   if (!isDrawing.value) return;
 
   context.value.strokeStyle = "white";
-  context.value.lineWidth = 2;
+  context.value.lineWidth = 8;
   context.value.beginPath();
   context.value.moveTo(lastX.value, lastY.value);
   context.value.lineTo(event.offsetX, event.offsetY);
   context.value.stroke();
+
   [lastX.value, lastY.value] = [event.offsetX, event.offsetY];
 }
 
