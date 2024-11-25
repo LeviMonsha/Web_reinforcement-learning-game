@@ -7,8 +7,8 @@
     @mousedown="startDrawing"
     @mouseup="stopDrawing"
     @mousemove="draw"
-    :width="800"
-    :height="600"
+    :width="900"
+    :height="500"
     style="border: 1px solid #000"
   ></canvas>
 </template>
@@ -18,7 +18,7 @@ import { ref, onMounted } from "vue";
 import { BeakerIcon } from "@heroicons/vue/24/solid";
 
 // eslint-disable-next-line no-undef, no-unused-vars
-const props = defineProps(["width", "height"]);
+const props = defineProps(["width", "height", "isDrawingAllowed"]);
 // eslint-disable-next-line no-undef, no-unused-vars
 const emit = defineEmits(["lineDrawn"]);
 const canvas = ref(null);
@@ -32,6 +32,9 @@ onMounted(() => {
 });
 
 function startDrawing(event) {
+  // eslint-disable-next-line no-undef
+  if (!props.isDrawingAllowed) return;
+
   isDrawing.value = true;
   [lastX.value, lastY.value] = [event.offsetX, event.offsetY];
 }
@@ -42,7 +45,8 @@ function stopDrawing() {
 }
 
 function draw(event) {
-  if (!isDrawing.value) return;
+  // eslint-disable-next-line no-undef
+  if (!isDrawing.value || !props.isDrawingAllowed) return;
 
   context.value.strokeStyle = "white";
   context.value.lineWidth = 8;
@@ -55,6 +59,7 @@ function draw(event) {
 }
 
 function clearCanvas() {
+  if (!props.isDrawingAllowed) return;
   context.value.clearRect(0, 0, canvas.value.width, canvas.value.height);
 }
 </script>

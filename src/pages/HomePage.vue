@@ -1,10 +1,10 @@
 <template>
   <div class="flex items-center justify-center h-screen bg-gray-900">
     <div
-      class="tv-container relative w-full h-full max-w-4xl max-h-3xl bg-gray-800 rounded-lg shadow-lg overflow-hidden"
+      class="relative w-full h-full max-w-4xl max-h-3xl bg-gray-800 rounded-lg shadow-lg overflow-hidden"
     >
       <div
-        class="tv-screen bg-black rounded-lg border-4 border-gray-600 flex items-center justify-center"
+        class="bg-black rounded-lg border-4 border-gray-600 flex items-center justify-center h-[80%]"
       >
         <button
           v-if="selectedMode"
@@ -15,12 +15,12 @@
         </button>
       </div>
       <div
-        class="tv-controls absolute bottom-0 left-0 right-0 p-4 flex justify-between bg-gray-700"
+        class="absolute bottom-0 left-0 right-0 p-4 flex flex-col md:flex-row justify-between bg-gray-700"
       >
         <button
           @click="toggleMode('manual')"
           :class="[
-            'px-4 py-2 rounded',
+            'px-4 py-2 rounded mb-2 md:mb-0',
             selectedMode === 'manual'
               ? 'bg-blue-500 text-white'
               : 'bg-gray-700 text-gray-300',
@@ -31,7 +31,7 @@
         <button
           @click="toggleMode('q-learning')"
           :class="[
-            'px-4 py-2 rounded mt-2',
+            'px-4 py-2 rounded',
             selectedMode === 'q-learning'
               ? 'bg-green-500 text-white'
               : 'bg-gray-700 text-gray-300',
@@ -64,12 +64,3 @@ const startGame = () => {
   emit("start", selectedMode.value);
 };
 </script>
-
-<style scoped>
-.tv-container {
-  position: relative;
-}
-.tv-screen {
-  height: 80%;
-}
-</style>
