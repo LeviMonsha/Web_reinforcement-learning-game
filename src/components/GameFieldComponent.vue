@@ -16,21 +16,15 @@
           :width="screenWidth"
           :height="screenHeight"
           :isDrawingAllowed="!isGameRunning"
-        />
-        <div class="game-field inset-0">
+        >
           <Car :position="position" :color="carColor" />
-          <div
+          <BonusComponent
             v-for="bonus in bonuses"
             :key="bonus.id"
-            class="absolute bg-yellow-500"
-            :style="{
-              width: '20px',
-              height: '20px',
-              top: bonus.y + 'px',
-              left: bonus.x + 'px',
-            }"
-          ></div>
-        </div>
+            :x="bonus.x"
+            :y="bonus.y"
+          />
+        </TrackCanvas>
       </div>
 
       <div
@@ -64,10 +58,12 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 import { WIDTH_CAR, HEIGHT_CAR, SPEED } from "../constants.js";
 import TrackCanvas from "./TrackCanvasComponent.vue";
 import Car from "./CarComponent.vue";
+import BonusComponent from "./BonusComponent.vue";
 import ScoreBoard from "./ScoreBoardComponent.vue";
 
-const position = ref({ x: 50, y: 50 });
 const initialPosition = { x: 50, y: 50 };
+const position = ref({ x: 50, y: 50 });
+
 const carColor = ref("blue");
 const scoreStatus = ref("green");
 const score = ref(0);
@@ -115,12 +111,14 @@ const handleKeydown = (event) => {
         moveCar("right");
         break;
     }
-    checkColorUnderCar();
   }
+  checkColorUnderCar();
 };
 
 const generateBonus = () => {
   const canvas = document.querySelector("canvas");
+  if (!canvas) return;
+
   const context = canvas.getContext("2d");
 
   let bonusPosition;
@@ -154,67 +152,32 @@ const checkColorUnderCar = () => {
   if (!canvas) return;
 
   const context = canvas.getContext("2d");
+  const { x, y } = position.value;
 
-  const corners = [
-    { x: position.value.x, y: position.value.y },
-    { x: position.value.x + WIDTH_CAR, y: position.value.y },
-    { x: position.value.x + WIDTH_CAR, y: position.value.y + HEIGHT_CAR },
-    { x: position.value.x, y: position.value.y + HEIGHT_CAR },
-    {
-      x: position.value.x + WIDTH_CAR / 2,
-      y: position.value.y + HEIGHT_CAR / 2,
-    },
-  ];
+  const isWhitePixel = (data) =>
+    data[0] === 255 && data[1] === 255 && data[2] === 255 && data[3] > 0;
 
-  for (const corner of corners) {
-    const imageData = context.getImageData(corner.x, corner.y, 1, 1);
-    const data = imageData.data;
-
-    const r = data[0];
-    const g = data[1];
-    const b = data[2];
-    const a = data[3];
-
-    if (r === 255 && g === 255 && b === 255 && a > 0) {
-      resetGame();
-      clearBonuses();
-      return;
-    }
-
-    for (let i = bonuses.value.length - 1; i >= 0; i--) {
-      const bonus = bonuses.value[i];
-      if (
-        corner.x >= bonus.x &&
-        corner.x <= bonus.x + 20 &&
-        corner.y >= bonus.y &&
-        corner.y <= bonus.y + 20
-      ) {
-        score.value += 10;
-        bonuses.value.splice(i, 1);
-        break;
+  for (let i = 0; i < WIDTH_CAR; i++) {
+    for (let j = 0; j < HEIGHT_CAR; j++) {
+      const imageData = context.getImageData(x + i, y + j, 1, 1);
+      if (isWhitePixel(imageData.data)) {
+        resetGame();
+        clearBonuses();
+        return;
       }
-    }
-  }
 
-  const fullImageData = context.getImageData(
-    position.value.x,
-    position.value.y,
-    WIDTH_CAR,
-    HEIGHT_CAR
-  );
-
-  const fullData = fullImageData.data;
-
-  for (let i = 0; i < fullData.length; i += 4) {
-    const r = fullData[i];
-    const g = fullData[i + 1];
-    const b = fullData[i + 2];
-    const a = fullData[i + 3];
-
-    if (r === 255 && g === 255 && b === 255 && a > 0) {
-      resetGame();
-      clearBonuses();
-      return;
+      for (const bonus of bonuses.value) {
+        if (
+          x + i >= bonus.x &&
+          x + i <= bonus.x + 20 &&
+          y + j >= bonus.y &&
+          y + j <= bonus.y + 20
+        ) {
+          score.value += 10;
+          bonuses.value = bonuses.value.filter((b) => b !== bonus);
+          break;
+        }
+      }
     }
   }
 
