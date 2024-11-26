@@ -1,7 +1,7 @@
 <template>
   <div
     class="flex items-center justify-center h-screen bg-gray-900"
-    @keydown="handleKeydown"
+    @keydown="isGameRunning ? handleKeydown : null"
     tabindex="0"
   >
     <ScoreBoard :score="score" :status="scoreStatus" />
@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import { WIDTH_CAR, HEIGHT_CAR, SPEED } from "../constants.js";
 import TrackCanvas from "./TrackCanvasComponent.vue";
 import Car from "./CarComponent.vue";
@@ -115,9 +115,8 @@ const handleKeydown = (event) => {
         moveCar("right");
         break;
     }
+    checkColorUnderCar();
   }
-
-  checkColorUnderCar();
 };
 
 const generateBonus = () => {
@@ -152,6 +151,8 @@ const generateBonus = () => {
 
 const checkColorUnderCar = () => {
   const canvas = document.querySelector("canvas");
+  if (!canvas) return;
+
   const context = canvas.getContext("2d");
 
   const corners = [
@@ -245,10 +246,15 @@ onMounted(() => {
   window.addEventListener("keydown", handleKeydown);
 });
 
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", handleKeydown);
+});
+
 const returnToMenu = () => {
   isGameRunning.value = false;
   clearBonuses();
   clearInterval(bonusInterval);
+  window.removeEventListener("keydown", handleKeydown);
   // eslint-disable-next-line no-undef
   emit("start", "menu");
 };
