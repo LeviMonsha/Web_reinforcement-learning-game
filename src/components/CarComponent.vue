@@ -1,42 +1,85 @@
 <template>
   <div
-    class="car absolute"
-    :class="`w-${WIDTH_CAR} h-${HEIGHT_CAR}`"
+    @keydown="handleKeyDown"
+    class="car"
     :style="{
-      left: position.x + 'px',
-      top: position.y + 'px',
-      backgroundColor: color,
+      width: size + 'px',
+      height: size + 'px',
+      left: x + 'px',
+      top: y + 'px',
     }"
-  />
+  ></div>
 </template>
 
-<script setup>
-import { defineProps } from "vue";
-import { SPEED, WIDTH_CAR, HEIGHT_CAR } from "@/constants";
+<script>
+import { ref, onMounted, onUnmounted } from "vue";
 
-// eslint-disable-next-line no-unused-vars
-const props = defineProps({
-  width: {
-    type: Number,
-    required: true,
+export default {
+  props: {
+    size: {
+      type: Number,
+      default: 30,
+    },
+    speed: {
+      type: Number,
+      default: 30,
+    },
+    bonuses: Array,
   },
-  height: {
-    type: Number,
-    required: true,
+  emits: ["bonus-collected"],
+  setup(props, { emit }) {
+    const x = ref(10);
+    const y = ref(10);
+
+    const handleKeyDown = (event) => {
+      switch (event.key) {
+        case "w":
+          y.value -= props.speed;
+          break;
+        case "s":
+          y.value += props.speed;
+          break;
+        case "a":
+          x.value -= props.speed;
+          break;
+        case "d":
+          x.value += props.speed;
+          break;
+      }
+
+      checkForBonuses();
+    };
+
+    const checkForBonuses = () => {
+      for (const bonus of props.bonuses) {
+        if (
+          x.value >= bonus.x &&
+          x.value <= bonus.x + 20 &&
+          y.value >= bonus.y &&
+          y.value <= bonus.y + 20
+        ) {
+          emit("bonus-collected", bonus.id);
+          break;
+        }
+      }
+    };
+
+    onMounted(() => {
+      document.addEventListener("keydown", handleKeyDown);
+    });
+
+    onUnmounted(() => {
+      document.removeEventListener("keydown", handleKeyDown);
+    });
+
+    return { x, y };
   },
-  speed: {
-    type: Number,
-    default: SPEED,
-  },
-  position: {
-    type: Object,
-    required: true,
-  },
-  color: {
-    type: String,
-    default: "blue",
-  },
-});
+};
 </script>
 
-<style scoped></style>
+<style scoped>
+.car {
+  background-color: red;
+  position: absolute;
+}
+</style>

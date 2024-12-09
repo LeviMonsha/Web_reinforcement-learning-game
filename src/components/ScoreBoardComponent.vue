@@ -1,26 +1,16 @@
 <template>
-  <div
-    class="absolute bg-black top-5 right-5 mt-5"
-    :class="{
-      'text-red-500': status === 'red',
-      'text-green-500': status !== 'red',
-    }"
-  >
-    <h4 class="text-lg">
-      {{ statusMessage }}
-    </h4>
+  <div class="absolute bg-black top-5 right-5 mt-5">
+    <p class="text-white">Очки: {{ score }}</p>
+    <p class="text-white">Время: {{ time }}</p>
   </div>
 </template>
 
-<script>
-export default {
-  props: ["score", "status"],
-  computed: {
-    statusMessage() {
-      return this.status === "red"
-        ? "Машинка задевает линию"
-        : "Машинка не задевает линию";
-    },
-  },
-};
+<script setup>
+import { defineProps } from "vue";
+
+// eslint-disable-next-line no-unused-vars
+const props = defineProps({
+  score: Number,
+  time: Number,
+});
 </script>

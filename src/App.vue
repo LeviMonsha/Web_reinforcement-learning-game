@@ -1,14 +1,14 @@
 <template>
   <div id="app">
     <HomePage v-if="!gameStarted" @start="startGame" />
-    <GameField v-else :mode="gameMode" @start="handleReturnToMenu" />
+    <GamePage v-else :mode="gameMode" @start="handleReturnToMenu" />
   </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
 import HomePage from "./pages/HomePage.vue";
-import GameField from "./components/GameFieldComponent.vue";
+import GamePage from "./pages/GamePage.vue";
 
 const gameStarted = ref(false);
 const gameMode = ref("");
