@@ -1,6 +1,7 @@
 <template>
   <button class="text-white" @click="clearCanvas">
     <BeakerIcon class="size-6 text-white" />
+    <BeakerIcon class="size-6 text-white" />
   </button>
   <canvas
     ref="canvas"
@@ -9,6 +10,7 @@
     @mousemove="draw"
     :width="900"
     :height="500"
+    class="relative"
     class="relative"
     style="border: 1px solid #000"
   />
