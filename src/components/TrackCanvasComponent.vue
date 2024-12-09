@@ -1,19 +1,18 @@
 <template>
   <button class="text-white" @click="clearCanvas">
     <BeakerIcon class="size-6 text-white" />
-    <BeakerIcon class="size-6 text-white" />
   </button>
   <canvas
     ref="canvas"
     @mousedown="startDrawing"
     @mouseup="stopDrawing"
     @mousemove="draw"
-    :width="900"
-    :height="500"
-    class="relative"
+    :width="width"
+    :height="height"
     class="relative"
     style="border: 1px solid #000"
   />
+  <slot />
 </template>
 
 <script setup>

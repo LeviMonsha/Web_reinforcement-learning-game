@@ -18,34 +18,51 @@ export default {
   props: {
     size: {
       type: Number,
-      default: 30,
+      default: 50,
     },
     speed: {
       type: Number,
-      default: 30,
+      default: 10,
     },
     bonuses: Array,
+    screenWidth: Number,
+    screenHeight: Number,
   },
-  emits: ["bonus-collected"],
+  emits: ["bonus-collected", "check-collision"],
   setup(props, { emit }) {
     const x = ref(10);
     const y = ref(10);
 
     const handleKeyDown = (event) => {
+      let newX = x.value;
+      let newY = y.value;
+
       switch (event.key) {
         case "w":
-          y.value -= props.speed;
+          newY -= props.speed;
           break;
         case "s":
-          y.value += props.speed;
+          newY += props.speed;
           break;
         case "a":
-          x.value -= props.speed;
+          newX -= props.speed;
           break;
         case "d":
-          x.value += props.speed;
+          newX += props.speed;
           break;
       }
+
+      if (newX < 0) newX = 0;
+      if (newX > props.screenWidth - props.size)
+        newX = props.screenWidth - props.size;
+      if (newY < 0) newY = 0;
+      if (newY > props.screenHeight - props.size)
+        newY = props.screenHeight - props.size;
+
+      x.value = newX;
+      y.value = newY;
+
+      emit("check-collision", { x: x.value, y: y.value });
 
       checkForBonuses();
     };
@@ -58,7 +75,7 @@ export default {
           y.value >= bonus.y &&
           y.value <= bonus.y + 20
         ) {
-          emit("bonus-collected", bonus.id);
+          emit("bonus-collected", { x: x.value, y: y.value });
           break;
         }
       }
