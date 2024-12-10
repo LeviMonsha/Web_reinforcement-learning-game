@@ -60,6 +60,10 @@ let timerInterval;
 // eslint-disable-next-line no-undef
 const emit = defineEmits(["start"]);
 
+const handleBonusCollected = (bonus) => {
+  score.value += bonus.size;
+};
+
 const startGame = () => {
   isGameRunning.value = true;
   isGameOver.value = false;

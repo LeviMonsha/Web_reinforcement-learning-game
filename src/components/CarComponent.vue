@@ -28,10 +28,11 @@ export default {
     screenWidth: Number,
     screenHeight: Number,
   },
-  emits: ["bonus-collected", "check-collision"],
+  emits: ["bonus-collected", "collision-check"],
+
   setup(props, { emit }) {
-    const x = ref(10);
-    const y = ref(10);
+    const x = ref(30);
+    const y = ref(30);
 
     const handleKeyDown = (event) => {
       let newX = x.value;
@@ -62,21 +63,50 @@ export default {
       x.value = newX;
       y.value = newY;
 
-      emit("check-collision", { x: x.value, y: y.value });
-
+      checkCollisions();
       checkForBonuses();
+    };
+
+    const checkCollisions = () => {
+      const canvas = document.querySelector("canvas");
+
+      if (!canvas) return;
+
+      const context = canvas.getContext("2d");
+
+      // Проверка на белую линию под машиной
+      const isWhitePixel = (data) =>
+        data[0] === 255 && data[1] === 255 && data[2] === 255 && data[3] > 0;
+
+      for (let i = 0; i < props.size; i++) {
+        for (let j = 0; j < props.size; j++) {
+          const imageData = context.getImageData(
+            x.value + i,
+            y.value + j,
+            1,
+            1
+          );
+
+          if (isWhitePixel(imageData.data)) {
+            alert("WHITE");
+            emit("collision-check"); // Эмитируем событие о завершении игры
+            return;
+          }
+        }
+      }
     };
 
     const checkForBonuses = () => {
       for (const bonus of props.bonuses) {
         if (
           x.value >= bonus.x &&
-          x.value <= bonus.x + 20 &&
+          x.value <= bonus.x + bonus.size &&
           y.value >= bonus.y &&
-          y.value <= bonus.y + 20
+          y.value <= bonus.y + bonus.size
         ) {
-          emit("bonus-collected", { x: x.value, y: y.value });
-          break;
+          console.log(`Bonus collected! Size: ${bonus.size}`);
+          emit("bonus-collected", bonus); // Эмитируем событие о сборе бонуса с объектом бонуса
+          break; // Выход из цикла после нахождения первого совпадения
         }
       }
     };
